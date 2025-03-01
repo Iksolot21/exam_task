@@ -105,23 +105,21 @@
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4">
-                        <h4>Двумерные спектры</h4>
-                        <img id="spectrum-2d-img" class="img-fluid mb-4" />
-
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
+                                <h4>Двумерные спектры и фильтрация</h4>
+                                <img id="filter-img" class="img-fluid" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-3">
                                 <label for="diameter" class="form-label">Диаметр среза НЧ фильтра</label>
                                 <input type="number" id="diameter" class="form-control" value="60" min="1" max="250">
                             </div>
-                            <div class="col-md-6">
-                                <button id="apply-filter-btn" class="btn btn-primary mt-4">Применить фильтр</button>
-                            </div>
                         </div>
-
-                        <h4>Результаты фильтрации</h4>
-                        <img id="filter-img" class="img-fluid" />
+                        <button id="apply-filter-btn" class="btn btn-primary">Применить фильтр</button>
                     </div>
-
+        
                     <button id="ssim-analysis-btn" class="btn btn-primary">Анализ SSIM</button>
                 </div>
             </div>

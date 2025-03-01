@@ -50,6 +50,10 @@ def generate_images():
 
         ssim = round(metrics.structural_similarity(phantom, noisePhantom, multichannel=True, data_range=1.0), 4)
 
+        # Преобразуем в float32 для передачи в JSON
+        phantom = phantom.astype(np.float32)
+        noisePhantom = noisePhantom.astype(np.float32)
+
         return jsonify({
             'image': img_str,
             'ssim': ssim,
@@ -65,8 +69,8 @@ def radon_transform():
     try:
         data = request.get_json()
 
-        phantom = np.array(data.get('phantom', []))
-        noisePhantom = np.array(data.get('noisePhantom', []))
+        phantom = np.array(data.get('phantom', []), dtype=np.float32)
+        noisePhantom = np.array(data.get('noisePhantom', []), dtype=np.float32)
 
         # Преобразование Радона
         r1 = radonTransformation(phantom)
@@ -105,6 +109,10 @@ def radon_transform():
         img_str2 = fig_to_base64(fig2)
         plt.close(fig2)
 
+        # Преобразуем в float32 для передачи в JSON
+        r1 = r1.astype(np.float32)
+        r2 = r2.astype(np.float32)
+
         return jsonify({
             'radon1': img_str1,
             'radon2': img_str2,
@@ -120,8 +128,8 @@ def slice_analysis():
     try:
         data = request.get_json()
 
-        r1 = np.array(data.get('r1', []))
-        r2 = np.array(data.get('r2', []))
+        r1 = np.array(data.get('r1', []), dtype=np.float32)
+        r2 = np.array(data.get('r2', []), dtype=np.float32)
         angle = int(data.get('angle', 85))
 
         # Получаем срез
@@ -185,40 +193,37 @@ def spectrum_2d_analysis():
     try:
         data = request.get_json()
 
-        phantom = np.array(data.get('phantom', []))
-        noisePhantom = np.array(data.get('noisePhantom', []))
+        phantom = np.array(data.get('phantom', []), dtype=np.float32)
+        noisePhantom = np.array(data.get('noisePhantom', []), dtype=np.float32)
 
         # Рассчитываем 2D спектры
         sp_phantom = np.log(1 + np.abs(spectrum_2dim(phantom)))
         sp_noisePhantom = np.log(1 + np.abs(spectrum_2dim(noisePhantom)))
-
-        # Визуализация 2D спектров
-        fig, axes = plt.subplots(1, 2, figsize=(12, 6))
-        axes[0].imshow(sp_phantom, cmap="gray")
-        axes[0].set_title("Спектр исходного", fontsize='14')
-        axes[1].imshow(sp_noisePhantom, cmap="gray")
-        axes[1].set_title("Спектр зашумленного", fontsize='14')
-
-        img_str = fig_to_base64(fig)
-        plt.close(fig)
 
         # Низкочастотный фильтр
         diameter = int(data.get('diameter', 60))
         lp_img1 = ideal_LowPass_filter(sp_phantom, diameter)
         lp_img2 = ideal_LowPass_filter(sp_noisePhantom, diameter)
 
-        fig2, axes = plt.subplots(1, 2, figsize=(12, 6))
-        axes[0].imshow(lp_img1, cmap="gray")
-        axes[0].set_title(f"НЧ фильтр исходного (D={diameter})", fontsize='14')
-        axes[1].imshow(lp_img2, cmap="gray")
-        axes[1].set_title(f"НЧ фильтр зашумленного (D={diameter})", fontsize='14')
+        # Вычисление SSIM (важно: используем np.abs для комплексных чисел)
+        data_range = np.max([np.max(np.abs(lp_img1)), np.max(np.abs(lp_img2))])
+        ssim = round(metrics.structural_similarity(np.abs(lp_img1), np.abs(lp_img2), multichannel=True, data_range=data_range), 4)
 
-        lp_img_str = fig_to_base64(fig2)
-        plt.close(fig2)
+        # Визуализация 2D спектров и отфильтрованных изображений
+        fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+
+        axes[0].imshow(np.abs(lp_img1), cmap="gray")  # np.abs для отображения
+        axes[0].set_title(f"НЧ фильтр исходного (D={diameter}, SSIM={ssim})", fontsize='14')
+
+        axes[1].imshow(np.abs(lp_img2), cmap="gray")  # np.abs для отображения
+        axes[1].set_title(f"НЧ фильтр зашумленного (D={diameter}, SSIM={ssim})", fontsize='14')
+
+        img_str = fig_to_base64(fig)
+        plt.close(fig)
 
         return jsonify({
-            'spectrum2d': img_str,
-            'lowpass': lp_img_str
+            'spectrum2d': img_str, # fix: теперь содержит и спектры и отфильтрованные
+            'lowpass': img_str, #  а также ssim
         })
     except Exception as e:
         print(f"Error in /spectrum_2d: {e}")  # Дополнительное логирование
@@ -262,7 +267,11 @@ def ssim_analysis():
             for diameter in range(1, 162, 1):
                 lp_img1 = ideal_LowPass_filter(defSpectrum, diameter)
                 lp_img2 = ideal_LowPass_filter(noiseSpectrum, diameter)
-                sp_ssim = round(metrics.structural_similarity(lp_img1, lp_img2, multichannel=True, data_range=1.0), 4)
+
+                # Вычисление SSIM с учетом комплексных чисел и динамического диапазона
+                data_range = np.max([np.max(np.abs(lp_img1)), np.max(np.abs(lp_img2))])
+                sp_ssim = round(metrics.structural_similarity(np.abs(lp_img1), np.abs(lp_img2), multichannel=True, data_range=data_range), 4)
+
 
                 diameter_results.append({
                     'diameter': diameter,

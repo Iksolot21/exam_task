@@ -146,7 +146,7 @@ document.getElementById('slice-btn').addEventListener('click', function() {
 // Анализ двумерного спектра
 document.getElementById('spectrum-2d-btn').addEventListener('click', function() {
     showLoading('spectrum-2d-btn');
-    
+
     fetch('/spectrum_2d', {
         method: 'POST',
         headers: {
@@ -160,12 +160,11 @@ document.getElementById('spectrum-2d-btn').addEventListener('click', function() 
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('spectrum-2d-img').src = 'data:image/png;base64,' + data.spectrum2d;
         document.getElementById('filter-img').src = 'data:image/png;base64,' + data.lowpass;
         document.getElementById('spectrum-2d-container').style.display = 'block';
-        
+
         hideLoading('spectrum-2d-btn');
-        
+
         // Прокрутка к контейнеру двумерного спектра
         document.getElementById('spectrum-2d-container').scrollIntoView({ behavior: 'smooth' });
     })

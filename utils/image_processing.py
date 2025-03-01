@@ -8,39 +8,28 @@ from scipy.signal import savgol_filter
 
 def showImages(*args, titles=None):
     """
-    Функция для вывода изображений на экран, выводит переданные изображения в строку. 
-    Вход: 
-        args - изображения, которые нужно вывести. Передаются просто перечислением, через ","
-        titles - заголовки для изображений. Передаются в виде списка строк, может быть пустым.
-
-    Выход: 
-        Выводит переданные изображения на экран. Ничего не возвращает. 
+    Функция для вывода изображений на экран, выводит переданные изображения в строку.
     """
     if titles is None:
         titles = []
-    
+
     fig, axes = plt.subplots(1, len(args))
-    
+
     if len(args) == 1:
         axes = [axes]
-    
+
     for i in range(len(axes)):
         axes[i].imshow(args[i], cmap="gray")
-        if len(titles) != 0: 
+        if len(titles) != 0:
             axes[i].set_title(titles[i], fontsize='14')
 
-    fig.set_figwidth(12)    
+    fig.set_figwidth(12)
     fig.set_figheight(12)
     return fig
 
 def createTestImage(size, output=False):
     """
-    Функция генерации тестового изображения. 
-    Вход:
-        size - желаемый размер изображения 
-        output - флаговая переменная отвечает за вывод изображения
-    Выход: 
-        image - тестовое изображение фантома Шеппа-Логана заданного размера 
+    Функция генерации тестового изображения.
     """
     ph = shepp_logan(size)
     image = transform.rotate(ph, 180)
@@ -53,12 +42,6 @@ def createTestImage(size, output=False):
 def addGaussianNoise(image, mean, sigma):
     """
     Функция для добавления шума Гаусса в тестовое изображение.
-    Вход: 
-        image - исходное изображение
-        mean - математическое ожидание 
-        sigma - дисперсия 
-    Выход: 
-        noisy - изображение с шумом
     """
     gauss = np.random.normal(mean, sigma, image.shape)
     gauss = gauss.reshape(image.shape)
@@ -67,17 +50,11 @@ def addGaussianNoise(image, mean, sigma):
 
 def radonTransformation(image, min_theta=0, max_theta=180, output=False):
     """
-    Функция преобразования Радона. 
-    Вход: 
-        image - исходное изображение
-        min_theta, max_theta - диапазон углов
-        output - флаговая переменная отвечает за построение результирующего графика
-    Выход: 
-        sinogram - синограмма
+    Функция преобразования Радона.
     """
     theta = np.arange(min_theta, max_theta+1)
     sinogram = transform.radon(image, theta=theta)
-    
+
     if output:
         dx, dy = 0.5 * 180.0 / max(image.shape), 0.5 / sinogram.shape[0]
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 5.5))
@@ -93,17 +70,13 @@ def radonTransformation(image, min_theta=0, max_theta=180, output=False):
         ax2.imshow(sinogram, cmap=plt.cm.Greys_r,
                    extent=(-dx, 180.0 + dx, -dy, sinogram.shape[0] + dy),
                    aspect='auto')
-    
+
         fig.tight_layout()
     return sinogram
 
-def spectrum(vector): 
+def spectrum(vector):
     """
     Функция для расчета спектра среза изображения с помощью преобразования Фурье
-    Вход: 
-       vector - срез исходного изображения
-    Выход: 
-       spectrum - спектр  
     """
     spec = np.fft.fft(vector)
     spec = np.log(1 + np.abs(spec))
@@ -112,13 +85,9 @@ def spectrum(vector):
 def spectrum_2dim(image):
     """
     Функция для получения двумерного Фурье спектра изображения
-    Вход: 
-        image - изображение
-    Выход: 
-        center - двумерный центрированный спектр в комплексных числах
     """
     fft2 = np.fft.fft2(image)
-    center = np.fft.fftshift(fft2)          
+    center = np.fft.fftshift(fft2)
     return center
 
 def distance(point1, point2):
@@ -153,4 +122,5 @@ def ideal_LowPass_filter(spectrum, D0):
         for y in range(rows):
             if distance((y,x), center) < D0:
                 base[y,x] = 1
-    return base * spectrum
+    #return base * spectrum
+    return base * spectrum # Keep as complex for correct SSIM
