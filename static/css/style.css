@@ -1,0 +1,86 @@
+body {
+    background-color: #f8f9fa;
+    padding-bottom: 50px;
+}
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #f1f8ff;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    padding: 5px;
+    background-color: white;
+}
+
+.btn-primary {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004fa3;
+}
+
+.alert {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: 500;
+}
+
+/* Стили для таблицы SSIM */
+#ssim-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+#ssim-table table, #ssim-table th, #ssim-table td {
+    border: 1px solid #ddd;
+}
+
+#ssim-table th, #ssim-table td {
+    padding: 8px;
+    text-align: center;
+}
+
+#ssim-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+#ssim-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#ssim-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Прогресс-бар при загрузке */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 123, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #007bff;
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
