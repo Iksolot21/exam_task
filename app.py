@@ -221,7 +221,7 @@ def spectrum_2d_analysis():
             'lowpass': lp_img_str
         })
     except Exception as e:
-        print(e)  # Log the exception
+        print(f"Error in /spectrum_2d: {e}")  # Дополнительное логирование
         return jsonify({'error': str(e)}), 500
 
 @app.route('/ssim_analysis', methods=['POST'])
@@ -236,6 +236,8 @@ def ssim_analysis():
 
         size = int(data.get('size', 500))
 
+        print(f"Начало анализа SSIM: num_images={num_images}, m={m}, s={s}, sigma_step={sigma_step}, size={size}") # Log
+
         # Генерация изображений и анализ SSIM
         phantom = createTestImage(size)
         defSpectrum = np.log(1 + np.abs(spectrum_2dim(phantom)))
@@ -248,6 +250,8 @@ def ssim_analysis():
         current_s = s
 
         for i in range(num_images):
+            print(f"Итерация {i+1}/{num_images}, current_s={current_s}") # Log
+
             img = addGaussianNoise(phantom, m, current_s)
             img = np.clip(img, 0, 1)
 
@@ -285,12 +289,14 @@ def ssim_analysis():
 
             current_s = round(current_s + sigma_step, 3)
 
+        print("Анализ SSIM завершен успешно") # Log
+
         return jsonify({
             'table': table.get_html_string(),
             'results': results
         })
     except Exception as e:
-        print(e)  # Log the exception
+        print(f"Error in /ssim_analysis: {e}")  # Log the exception
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
