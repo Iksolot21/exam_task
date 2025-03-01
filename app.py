@@ -61,7 +61,7 @@ def generate_images():
             'noisePhantom': noisePhantom.tolist()
         })
     except Exception as e:
-        print(e)  # Log the exception
+        print(e)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/radon_transform', methods=['POST'])
@@ -120,7 +120,7 @@ def radon_transform():
             'r2': r2.tolist()
         })
     except Exception as e:
-        print(e)  # Log the exception
+        print(e)  
         return jsonify({'error': str(e)}), 500
 
 @app.route('/slice_analysis', methods=['POST'])
@@ -185,7 +185,7 @@ def slice_analysis():
             'spectrum': spectrum_img
         })
     except Exception as e:
-        print(e)  # Log the exception
+        print(e) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/spectrum_2d', methods=['POST'])
@@ -212,21 +212,21 @@ def spectrum_2d_analysis():
         # Визуализация 2D спектров и отфильтрованных изображений
         fig, axes = plt.subplots(1, 2, figsize=(12, 6))
 
-        axes[0].imshow(np.abs(lp_img1), cmap="gray")  # np.abs для отображения
+        axes[0].imshow(np.abs(lp_img1), cmap="gray") 
         axes[0].set_title(f"НЧ фильтр исходного (D={diameter}, SSIM={ssim})", fontsize='14')
 
-        axes[1].imshow(np.abs(lp_img2), cmap="gray")  # np.abs для отображения
+        axes[1].imshow(np.abs(lp_img2), cmap="gray")  
         axes[1].set_title(f"НЧ фильтр зашумленного (D={diameter}, SSIM={ssim})", fontsize='14')
 
         img_str = fig_to_base64(fig)
         plt.close(fig)
 
         return jsonify({
-            'spectrum2d': img_str, # fix: теперь содержит и спектры и отфильтрованные
-            'lowpass': img_str, #  а также ssim
+            'spectrum2d': img_str, 
+            'lowpass': img_str, 
         })
     except Exception as e:
-        print(f"Error in /spectrum_2d: {e}")  # Дополнительное логирование
+        print(f"Error in /spectrum_2d: {e}") 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/ssim_analysis', methods=['POST'])
@@ -241,7 +241,7 @@ def ssim_analysis():
 
         size = int(data.get('size', 500))
 
-        print(f"Начало анализа SSIM: num_images={num_images}, m={m}, s={s}, sigma_step={sigma_step}, size={size}") # Log
+        print(f"Начало анализа SSIM: num_images={num_images}, m={m}, s={s}, sigma_step={sigma_step}, size={size}")
 
         # Генерация изображений и анализ SSIM
         phantom = createTestImage(size)
@@ -255,7 +255,7 @@ def ssim_analysis():
         current_s = s
 
         for i in range(num_images):
-            print(f"Итерация {i+1}/{num_images}, current_s={current_s}") # Log
+            print(f"Итерация {i+1}/{num_images}, current_s={current_s}")
 
             img = addGaussianNoise(phantom, m, current_s)
             img = np.clip(img, 0, 1)
@@ -278,7 +278,6 @@ def ssim_analysis():
                     'ssim': sp_ssim
                 })
 
-                # Добавляем в таблицу только некоторые значения для наглядности
                 if diameter % 10 == 0 or diameter == 1:
                     if diameter == 1:
                         table.add_row([i+1, m, current_s, imgSSIM, diameter, sp_ssim])
@@ -298,14 +297,14 @@ def ssim_analysis():
 
             current_s = round(current_s + sigma_step, 3)
 
-        print("Анализ SSIM завершен успешно") # Log
+        print("Анализ SSIM завершен успешно") 
 
         return jsonify({
             'table': table.get_html_string(),
             'results': results
         })
     except Exception as e:
-        print(f"Error in /ssim_analysis: {e}")  # Log the exception
+        print(f"Error in /ssim_analysis: {e}")  
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':

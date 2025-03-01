@@ -11,7 +11,6 @@ function showLoading(buttonId) {
     const button = document.getElementById(buttonId);
     button.disabled = true;
     
-    // Добавить индикатор загрузки, если его еще нет
     if (!button.querySelector('.loading')) {
         const spinner = document.createElement('span');
         spinner.className = 'loading';
@@ -24,7 +23,6 @@ function hideLoading(buttonId) {
     const button = document.getElementById(buttonId);
     button.disabled = false;
     
-    // Удалить индикатор загрузки
     const spinner = button.querySelector('.loading');
     if (spinner) {
         button.removeChild(spinner);
@@ -219,7 +217,7 @@ document.getElementById('run-ssim-analysis-btn').addEventListener('click', funct
     const sigmaStep = document.getElementById('sigma-step').value;
     const size = document.getElementById('image-size').value;
 
-    console.log("Отправка данных на сервер:", {  // Debug log
+    console.log("Отправка данных на сервер:", { 
         numOfImages: numImages,
         m: m,
         s: s,

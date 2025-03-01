@@ -122,5 +122,4 @@ def ideal_LowPass_filter(spectrum, D0):
         for y in range(rows):
             if distance((y,x), center) < D0:
                 base[y,x] = 1
-    #return base * spectrum
-    return base * spectrum # Keep as complex for correct SSIM
+    return base * spectrum 
