@@ -7,3 +7,4 @@ phantominator==0.6.0
 opencv-python==4.7.0.72
 prettytable==3.7.0
 Werkzeug==2.2.3
+waitress==3.0.2
