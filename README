@@ -31,8 +31,7 @@
     *   Bootstrap (CSS фреймворк)
 
 ## Структура проекта
-Use code with caution.
-Markdown
+
 exzame_task/
 ├── app.py # Основной файл Flask-приложения
 ├── README.md # Этот файл
